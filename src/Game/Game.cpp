@@ -5,7 +5,7 @@
 
 #include <glm/glm.hpp>
 
-#include "Logger.h"
+#include "../Logger/Logger.h"
 
 const int Game::GAME_WINDOW_WIDTH = 800;
 const int Game::GAME_WINDOW_HEIGHT = 600;
