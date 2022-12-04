@@ -13,6 +13,6 @@ struct LogEntry {
 class Logger {
  public:
   static std::vector<LogEntry> messages;
-  static void Log(const std::string& message);
-  static void Err(const std::string& message);
+  static void Log(const std::string& tag, const std::string& message);
+  static void Err(const std::string& tag, const std::string& message);
 };

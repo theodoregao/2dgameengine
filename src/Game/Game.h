@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "../AssetStore/AssetStore.h"
 #include "../ECS/ECS.h"
 
 const int GAME_WINDOW_WIDTH = 800;
@@ -26,7 +27,10 @@ class Game {
  private:
   SDL_Window* window;
   SDL_Renderer* renderer;
+
   std::unique_ptr<Registry> registry;
+  std::unique_ptr<AssetStore> assetStore;
+
   bool isRunning;
   int windowWidth;
   int windowHeight;

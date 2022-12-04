@@ -16,16 +16,16 @@ std::string CurrentDateTimeToString() {
   return output;
 }
 
-void Logger::Log(const std::string& message) {
-  LogEntry logEntry{LOG_INFO,
-                    "LOG: [" + CurrentDateTimeToString() + "]: " + message};
+void Logger::Log(const std::string& tag, const std::string& message) {
+  LogEntry logEntry{LOG_INFO, "LOG: [" + CurrentDateTimeToString() + "] " +
+                                  "<" + tag + "> : " + message};
   std::cout << "\x1B[32m" << logEntry.message << "\033[0m" << std::endl;
   messages.push_back(logEntry);
 }
 
-void Logger::Err(const std::string& message) {
-  LogEntry logEntry{LOG_ERROR,
-                    "ERR: [" + CurrentDateTimeToString() + "]: " + message};
+void Logger::Err(const std::string& tag, const std::string& message) {
+  LogEntry logEntry{LOG_ERROR, "ERR: [" + CurrentDateTimeToString() + "] " +
+                                   "<" + tag + "> : " + message};
   std::cout << "\x1B[91m" << logEntry.message << "\033[0m" << std::endl;
   messages.push_back(logEntry);
 }
