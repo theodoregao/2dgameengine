@@ -6,10 +6,10 @@ build:
 	src/*.cpp \
 	-lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer \
 	-llua5.3 \
-	-o gameengine
+	-o out/gameengine
 
 run:
-	./gameengine
+	out/gameengine
 
 clean:
-	rm gameengine
+	rm out/*
