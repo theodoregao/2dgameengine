@@ -5,13 +5,15 @@
 
 #include <glm/glm.hpp>
 
+#include "../Components/RigidBodyComponent.h"
+#include "../Components/TransformComponent.h"
+#include "../ECS/ECS.h"
 #include "../Logger/Logger.h"
-
-const int Game::GAME_WINDOW_WIDTH = 800;
-const int Game::GAME_WINDOW_HEIGHT = 600;
+#include "../Systems/MovementSystem.h"
 
 Game::Game() {
   Logger::Log("Game contructor called");
+  registry = std::make_unique<Registry>();
   isRunning = true;
 }
 
@@ -23,8 +25,8 @@ void Game::Initialize() {
     Logger::Err("Error initializing SDL.");
     return;
   }
-  windowWidth = Game::GAME_WINDOW_WIDTH;
-  windowHeight = Game::GAME_WINDOW_HEIGHT;
+  windowWidth = GAME_WINDOW_WIDTH;
+  windowHeight = GAME_WINDOW_HEIGHT;
   window =
       SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                        windowWidth, windowHeight, SDL_WINDOW_BORDERLESS);
@@ -52,17 +54,17 @@ void Game::Run() {
   }
 }
 
-glm::vec2 playerPosition;
-glm::vec2 playerVelocity;
-
 void Game::Setup() {
   Logger::Log("Setup()");
-  playerPosition = glm::vec2(10.0, 20.0);
-  playerVelocity = glm::vec2(60.0, 0);
+  registry->AddSystem<MovementSystem>();
+
+  Entity tank = registry->CreateEntity();
+  tank.AddComponent<TransformComponent>(glm::vec2(10.0, 30.0),
+                                        glm::vec2(1.0, 1.0), 0.0);
+  tank.AddComponent<RigidBodyComponent>(glm::vec2(50.0, 0.0));
 }
 
 void Game::ProcessInput() {
-  Logger::Log("ProcessInput()");
   SDL_Event sdlEvent;
   while (isRunning && SDL_PollEvent(&sdlEvent)) {
     switch (sdlEvent.type) {
@@ -83,8 +85,6 @@ void Game::ProcessInput() {
 }
 
 void Game::Update() {
-  Logger::Log("Update()");
-
   // FPS control
   int timeToWait =
       MILLISECS_PER_FRAME - (SDL_GetTicks() - millisecsPreviousFrame);
@@ -96,23 +96,17 @@ void Game::Update() {
   double deltaTime = (SDL_GetTicks() - millisecsPreviousFrame) / 1000.0;
   millisecsPreviousFrame = SDL_GetTicks();
 
-  playerPosition.x += playerVelocity.x * deltaTime;
-  playerPosition.y += playerVelocity.y * deltaTime;
+  // Update the registry to process the entities that are waiting to be
+  // created/deleted
+  registry->Update();
+
+  // Ask all the systems to update
+  registry->GetSystem<MovementSystem>().Update(deltaTime);
 }
 
 void Game::Render() {
-  Logger::Log("Render()");
   SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
   SDL_RenderClear(renderer);
-
-  SDL_Surface* surface = IMG_Load("./assets/images/tank-tiger-right.png");
-  SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-  SDL_FreeSurface(surface);
-  SDL_Rect dstRect = {static_cast<int>(playerPosition.x),
-                      static_cast<int>(playerPosition.y), 32, 32};
-  SDL_RenderCopy(renderer, texture, NULL, &dstRect);
-  SDL_DestroyTexture(texture);
-
   SDL_RenderPresent(renderer);  // swap the back & front buffer
 }
 

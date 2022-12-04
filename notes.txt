@@ -1,3 +1,6 @@
+# dev dependencies
+sudo apt install build-essential libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev liblua5.3-dev
+
 # logging
 spdlog/c++: https://github.com/gabime/spdlog
 rxi log/c: https://github.com/rxi/log.c
