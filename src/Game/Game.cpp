@@ -6,10 +6,12 @@
 #include <glm/glm.hpp>
 
 #include "../Components/RigidBodyComponent.h"
+#include "../Components/SpriteComponent.h"
 #include "../Components/TransformComponent.h"
 #include "../ECS/ECS.h"
 #include "../Logger/Logger.h"
 #include "../Systems/MovementSystem.h"
+#include "../Systems/RenderSystem.h"
 
 Game::Game() {
   Logger::Log("Game contructor called");
@@ -57,11 +59,19 @@ void Game::Run() {
 void Game::Setup() {
   Logger::Log("Setup()");
   registry->AddSystem<MovementSystem>();
+  registry->AddSystem<RenderSystem>();
 
   Entity tank = registry->CreateEntity();
   tank.AddComponent<TransformComponent>(glm::vec2(10.0, 30.0),
                                         glm::vec2(1.0, 1.0), 0.0);
   tank.AddComponent<RigidBodyComponent>(glm::vec2(50.0, 0.0));
+  tank.AddComponent<SpriteComponent>(30, 30);
+
+  Entity truck = registry->CreateEntity();
+  truck.AddComponent<TransformComponent>(glm::vec2(600.0, 500.0),
+                                         glm::vec2(1.0, 1.0), 0.0);
+  truck.AddComponent<RigidBodyComponent>(glm::vec2(-30.0, -10.0));
+  truck.AddComponent<SpriteComponent>(20, 80);
 }
 
 void Game::ProcessInput() {
@@ -107,6 +117,7 @@ void Game::Update() {
 void Game::Render() {
   SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
   SDL_RenderClear(renderer);
+  registry->GetSystem<RenderSystem>().Update(renderer);
   SDL_RenderPresent(renderer);  // swap the back & front buffer
 }
 
