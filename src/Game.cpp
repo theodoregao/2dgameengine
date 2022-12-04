@@ -4,22 +4,23 @@
 #include <SDL2/SDL_image.h>
 
 #include <glm/glm.hpp>
-#include <iostream>
+
+#include "Logger.h"
 
 const int Game::GAME_WINDOW_WIDTH = 800;
 const int Game::GAME_WINDOW_HEIGHT = 600;
 
 Game::Game() {
-  std::cout << "Game contructor called" << std::endl;
+  Logger::Log("Game contructor called");
   isRunning = true;
 }
 
-Game::~Game() { std::cout << "Game destructor called" << std::endl; }
+Game::~Game() { Logger::Log("Game destructor called"); }
 
 void Game::Initialize() {
-  std::cout << "Initialize()" << std::endl;
+  Logger::Log("Initialize()");
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-    std::cerr << "Error initializing SDL." << std::endl;
+    Logger::Err("Error initializing SDL.");
     return;
   }
   windowWidth = Game::GAME_WINDOW_WIDTH;
@@ -28,21 +29,21 @@ void Game::Initialize() {
       SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                        windowWidth, windowHeight, SDL_WINDOW_BORDERLESS);
   if (!window) {
-    std::cerr << "Error creating SDL window." << std::endl;
-    std::cerr << SDL_GetError() << std::endl;
+    Logger::Err("Error creating SDL window.");
+    Logger::Err(SDL_GetError());
     return;
   }
   renderer = SDL_CreateRenderer(window, -1, 0);
   if (!renderer) {
-    std::cerr << "Error creating SDL renderer." << std::endl;
-    std::cerr << SDL_GetError() << std::endl;
+    Logger::Err("Error creating SDL renderer.");
+    Logger::Err(SDL_GetError());
     return;
   }
   // SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 }
 
 void Game::Run() {
-  std::cout << "Run()" << std::endl;
+  Logger::Log("Run()");
   Setup();
   while (isRunning) {
     ProcessInput();
@@ -55,13 +56,13 @@ glm::vec2 playerPosition;
 glm::vec2 playerVelocity;
 
 void Game::Setup() {
-  std::cout << "Setup()" << std::endl;
+  Logger::Log("Setup()");
   playerPosition = glm::vec2(10.0, 20.0);
   playerVelocity = glm::vec2(60.0, 0);
 }
 
 void Game::ProcessInput() {
-  std::cout << "ProcessInput()" << std::endl;
+  Logger::Log("ProcessInput()");
   SDL_Event sdlEvent;
   while (isRunning && SDL_PollEvent(&sdlEvent)) {
     switch (sdlEvent.type) {
@@ -82,7 +83,7 @@ void Game::ProcessInput() {
 }
 
 void Game::Update() {
-  std::cout << "Update()" << std::endl;
+  Logger::Log("Update()");
 
   // FPS control
   int timeToWait =
@@ -100,7 +101,7 @@ void Game::Update() {
 }
 
 void Game::Render() {
-  std::cout << "Render()" << std::endl;
+  Logger::Log("Render()");
   SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
   SDL_RenderClear(renderer);
 
@@ -116,7 +117,7 @@ void Game::Render() {
 }
 
 void Game::Destory() {
-  std::cout << "Destory()" << std::endl;
+  Logger::Log("Destory()");
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();

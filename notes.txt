@@ -1,0 +1,3 @@
+# logging
+spdlog/c++: https://github.com/gabime/spdlog
+rxi log/c: https://github.com/rxi/log.c
