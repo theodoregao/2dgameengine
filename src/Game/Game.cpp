@@ -88,22 +88,22 @@ void Game::LoadLevel(int level) {
       tile.AddComponent<TransformComponent>(
           glm::vec2(x * (tileScale * tileSize), y * (tileScale * tileSize)),
           glm::vec2(tileScale, tileScale), 0.0);
-      tile.AddComponent<SpriteComponent>("tilemap-image", tileSize, tileSize,
+      tile.AddComponent<SpriteComponent>("tilemap-image", 0, tileSize, tileSize,
                                          srcRectX, srcRectY);
     }
   }
 
   Entity tank = registry->CreateEntity();
-  tank.AddComponent<TransformComponent>(glm::vec2(10.0, 30.0),
+  tank.AddComponent<TransformComponent>(glm::vec2(10.0, 10.0),
                                         glm::vec2(1.0, 1.0), 0.0);
-  tank.AddComponent<RigidBodyComponent>(glm::vec2(50.0, 0.0));
-  tank.AddComponent<SpriteComponent>("tank-image", 32, 32);
+  tank.AddComponent<RigidBodyComponent>(glm::vec2(50.0, 50.0));
+  tank.AddComponent<SpriteComponent>("tank-image", 2, 32, 32);
 
   Entity truck = registry->CreateEntity();
-  truck.AddComponent<TransformComponent>(glm::vec2(600.0, 500.0),
+  truck.AddComponent<TransformComponent>(glm::vec2(500.0, 500.0),
                                          glm::vec2(2.0, 2.0), -135.0);
   truck.AddComponent<RigidBodyComponent>(glm::vec2(-30.0, -30.0));
-  truck.AddComponent<SpriteComponent>("truck-image", 32, 32);
+  truck.AddComponent<SpriteComponent>("truck-image", 1, 32, 32);
 }
 
 void Game::ProcessInput() {
