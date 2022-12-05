@@ -5,12 +5,14 @@
 #include <typeinfo>
 
 #include "../Components/AnimationComponent.h"
+#include "../Components/BoxColliderComponent.h"
 #include "../Components/RigidBodyComponent.h"
 #include "../Components/SpriteComponent.h"
 #include "../Components/TransformComponent.h"
 #include "../ECS/ECS.h"
 #include "../Logger/Logger.h"
 #include "../Systems/AnimationSystem.h"
+#include "../Systems/CollisionSystem.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/RenderSystem.h"
 
@@ -62,9 +64,10 @@ void Game::Setup() { LoadLevel(1); }
 
 void Game::LoadLevel(int level) {
   Logger::Log(typeid(this).name(), "Setup()");
+  registry->AddSystem<AnimationSystem>();
+  registry->AddSystem<CollisionSystem>();
   registry->AddSystem<MovementSystem>();
   registry->AddSystem<RenderSystem>();
-  registry->AddSystem<AnimationSystem>();
 
   assetStore->AddTexture(renderer, "chopper-image",
                          "./assets/images/chopper.png");
@@ -113,12 +116,14 @@ void Game::LoadLevel(int level) {
                                         glm::vec2(1.0, 1.0), 0.0);
   tank.AddComponent<RigidBodyComponent>(glm::vec2(50.0, 50.0));
   tank.AddComponent<SpriteComponent>("tank-image", 2, 32, 32);
+  tank.AddComponent<BoxColliderComponent>(32, 32);
 
   Entity truck = registry->CreateEntity();
   truck.AddComponent<TransformComponent>(glm::vec2(500.0, 500.0),
                                          glm::vec2(2.0, 2.0), -135.0);
   truck.AddComponent<RigidBodyComponent>(glm::vec2(-30.0, -30.0));
   truck.AddComponent<SpriteComponent>("truck-image", 1, 32, 32);
+  truck.AddComponent<BoxColliderComponent>(32, 32);
 
   Entity radar = registry->CreateEntity();
   radar.AddComponent<TransformComponent>(glm::vec2(windowWidth - 70, 10.0),
@@ -166,6 +171,7 @@ void Game::Update() {
   // Ask all the systems to update
   registry->GetSystem<MovementSystem>().Update(deltaTime);
   registry->GetSystem<AnimationSystem>().Update();
+  registry->GetSystem<CollisionSystem>().Update();
 }
 
 void Game::Render() {

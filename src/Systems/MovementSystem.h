@@ -3,7 +3,6 @@
 #include "../Components/RigidBodyComponent.h"
 #include "../Components/TransformComponent.h"
 #include "../ECS/ECS.h"
-#include "../Logger/Logger.h"
 
 class MovementSystem : public System {
  public:
