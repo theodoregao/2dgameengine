@@ -1,11 +1,14 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <memory>
 #include <typeinfo>
 
 #include "../Components/BoxColliderComponent.h"
 #include "../Components/TransformComponent.h"
 #include "../ECS/ECS.h"
+#include "../EventBus/EventBus.h"
+#include "../Events/CollisionEvent.h"
 #include "../Logger/Logger.h"
 #include "Utils.h"
 
@@ -16,7 +19,7 @@ class CollisionSystem : public System {
     RequireComponent<BoxColliderComponent>();
   }
 
-  void Update() {
+  void Update(std::unique_ptr<EventBus>& eventBus) {
     auto entities = GetSystemEntities();
     for (auto i = entities.begin(); i != entities.end(); i++) {
       Entity a = *i;
@@ -33,9 +36,7 @@ class CollisionSystem : public System {
             bTransform.position + bCollider.offset,
             glm::vec2(bCollider.width, bCollider.height));
         if (isCollides) {
-          Logger::Log(typeid(this).name(), std::to_string(a.GetId()) +
-                                               " collides with " +
-                                               std::to_string(b.GetId()));
+          eventBus->EmitEvent<CollisionEvent>(a, b);
         }
       }
     }

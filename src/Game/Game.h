@@ -6,6 +6,7 @@
 
 #include "../AssetStore/AssetStore.h"
 #include "../ECS/ECS.h"
+#include "../EventBus/EventBus.h"
 
 const int GAME_WINDOW_WIDTH = 800;
 const int GAME_WINDOW_HEIGHT = 600;
@@ -31,6 +32,7 @@ class Game {
 
   std::unique_ptr<Registry> registry;
   std::unique_ptr<AssetStore> assetStore;
+  std::unique_ptr<EventBus> eventBus;
 
   bool isRunning;
   bool isDebug;

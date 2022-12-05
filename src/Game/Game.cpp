@@ -1,5 +1,7 @@
 #include "Game.h"
 
+#include <SDL2/SDL.h>
+
 #include <fstream>
 #include <glm/glm.hpp>
 #include <typeinfo>
@@ -10,9 +12,12 @@
 #include "../Components/SpriteComponent.h"
 #include "../Components/TransformComponent.h"
 #include "../ECS/ECS.h"
+#include "../Events/KeyPressedEvent.h"
 #include "../Logger/Logger.h"
 #include "../Systems/AnimationSystem.h"
 #include "../Systems/CollisionSystem.h"
+#include "../Systems/DamageSystem.h"
+#include "../Systems/KeyboardControlSystem.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/RenderColliderSystem.h"
 #include "../Systems/RenderSystem.h"
@@ -21,6 +26,7 @@ Game::Game() {
   Logger::Log(typeid(this).name(), "Game contructor called");
   registry = std::make_unique<Registry>();
   assetStore = std::make_unique<AssetStore>();
+  eventBus = std::make_unique<EventBus>();
   isRunning = true;
   isDebug = false;
 }
@@ -68,6 +74,8 @@ void Game::LoadLevel(int level) {
   Logger::Log(typeid(this).name(), "Setup()");
   registry->AddSystem<AnimationSystem>();
   registry->AddSystem<CollisionSystem>();
+  registry->AddSystem<DamageSystem>();
+  registry->AddSystem<KeyboardControlSystem>();
   registry->AddSystem<MovementSystem>();
   registry->AddSystem<RenderColliderSystem>();
   registry->AddSystem<RenderSystem>();
@@ -120,14 +128,13 @@ void Game::LoadLevel(int level) {
   tank.AddComponent<RigidBodyComponent>(glm::vec2(50.0, 50.0));
   tank.AddComponent<SpriteComponent>("tank-image", 2, 32, 32);
   tank.AddComponent<BoxColliderComponent>(32, 32);
-  tank.Kill();
 
   Entity truck = registry->CreateEntity();
   truck.AddComponent<TransformComponent>(glm::vec2(500.0, 500.0),
-                                         glm::vec2(2.0, 2.0), 0.0);
+                                         glm::vec2(1.0, 1.0), 0.0);
   truck.AddComponent<RigidBodyComponent>(glm::vec2(-30.0, -30.0));
   truck.AddComponent<SpriteComponent>("truck-image", 1, 32, 32);
-  truck.AddComponent<BoxColliderComponent>(32 * 2.0, 32 * 2.0);
+  truck.AddComponent<BoxColliderComponent>(321, 32);
 
   Entity radar = registry->CreateEntity();
   radar.AddComponent<TransformComponent>(glm::vec2(windowWidth - 70, 10.0),
@@ -150,6 +157,7 @@ void Game::ProcessInput() {
         } else if (sdlEvent.key.keysym.sym == SDLK_d) {
           isDebug = !isDebug;
         }
+        eventBus->EmitEvent<KeyPressedEvent>(sdlEvent.key.keysym.sym);
         break;
 
       default:
@@ -170,6 +178,11 @@ void Game::Update() {
   double deltaTime = (SDL_GetTicks() - millisecsPreviousFrame) / 1000.0;
   millisecsPreviousFrame = SDL_GetTicks();
 
+  // Perform the subscription of the events for all systems
+  eventBus->Reset();
+  registry->GetSystem<DamageSystem>().SubscribeToEvents(eventBus);
+  registry->GetSystem<KeyboardControlSystem>().SubscribeToEvents(eventBus);
+
   // Update the registry to process the entities that are waiting to be
   // created/deleted
   registry->Update();
@@ -177,7 +190,7 @@ void Game::Update() {
   // Ask all the systems to update
   registry->GetSystem<MovementSystem>().Update(deltaTime);
   registry->GetSystem<AnimationSystem>().Update();
-  registry->GetSystem<CollisionSystem>().Update();
+  registry->GetSystem<CollisionSystem>().Update(eventBus);
 }
 
 void Game::Render() {
