@@ -23,7 +23,7 @@ class EventCallback : public IEventCallback {
   typedef void (TOwner::*CallbackFunction)(TEvent&);
 
  public:
-  EventCallback(TOwner* owner, CallbackFunction callbackFunction) {
+  EventCallback(TOwner* ownerInstance, CallbackFunction callbackFunction) {
     this->ownerInstance = ownerInstance;
     this->callbackFunction = callbackFunction;
   }
@@ -50,7 +50,7 @@ class EventBus {
   template <typename TEvent, typename TOwner>
   void SubscribeToEvent(TOwner* ownerInstance,
                         void (TOwner::*callbackFunction)(TEvent&)) {
-    if (!subscribers[typeid(TEvent)]) {
+    if (!subscribers[typeid(TEvent)].get()) {
       subscribers[typeid(TEvent)] = std::make_unique<HandlerList>();
     }
     auto subscriber = std::make_unique<EventCallback<TOwner, TEvent>>(

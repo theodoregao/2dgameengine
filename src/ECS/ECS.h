@@ -131,8 +131,8 @@ class Registry {
   TSystem& GetSystem() const;
 
  private:
-  void AddEntityToSystems(Entity entity);
-  void RemoveEntityFromSystems(Entity entity);
+  void AddEntityToSystem(Entity entity);
+  void RemoveEntityFromSystem(Entity entity);
 
  private:
   size_t numEntities = 0;

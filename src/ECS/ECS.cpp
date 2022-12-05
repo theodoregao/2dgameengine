@@ -53,19 +53,19 @@ void Registry::KillEntity(Entity entity) {
 
 void Registry::Update() {
   for (auto entity : entitiesToBeAdded) {
-    AddEntityToSystems(entity);
+    AddEntityToSystem(entity);
   }
   entitiesToBeAdded.clear();
 
   for (auto entity : entitiesToBeKilled) {
-    RemoveEntityFromSystems(entity);
+    RemoveEntityFromSystem(entity);
     entityComponentSignatures[entity.GetId()].reset();
     freeIds.push_back(entity.GetId());
   }
   entitiesToBeKilled.clear();
 }
 
-void Registry::AddEntityToSystems(Entity entity) {
+void Registry::AddEntityToSystem(Entity entity) {
   const auto entityId = entity.GetId();
   const auto entityComponentSignature = entityComponentSignatures[entityId];
   for (auto& system : systems) {
@@ -79,7 +79,7 @@ void Registry::AddEntityToSystems(Entity entity) {
   }
 }
 
-void Registry::RemoveEntityFromSystems(Entity entity) {
+void Registry::RemoveEntityFromSystem(Entity entity) {
   for (auto& system : systems) {
     system.second->RemoveEntityFromSystem(entity);
   }
