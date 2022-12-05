@@ -33,6 +33,7 @@ class Game {
   std::unique_ptr<AssetStore> assetStore;
 
   bool isRunning;
+  bool isDebug;
   int windowWidth;
   int windowHeight;
   int millisecsPreviousFrame;

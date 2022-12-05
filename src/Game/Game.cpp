@@ -14,6 +14,7 @@
 #include "../Systems/AnimationSystem.h"
 #include "../Systems/CollisionSystem.h"
 #include "../Systems/MovementSystem.h"
+#include "../Systems/RenderColliderSystem.h"
 #include "../Systems/RenderSystem.h"
 
 Game::Game() {
@@ -21,6 +22,7 @@ Game::Game() {
   registry = std::make_unique<Registry>();
   assetStore = std::make_unique<AssetStore>();
   isRunning = true;
+  isDebug = false;
 }
 
 Game::~Game() { Logger::Log(typeid(this).name(), "Game destructor called"); }
@@ -67,6 +69,7 @@ void Game::LoadLevel(int level) {
   registry->AddSystem<AnimationSystem>();
   registry->AddSystem<CollisionSystem>();
   registry->AddSystem<MovementSystem>();
+  registry->AddSystem<RenderColliderSystem>();
   registry->AddSystem<RenderSystem>();
 
   assetStore->AddTexture(renderer, "chopper-image",
@@ -120,10 +123,10 @@ void Game::LoadLevel(int level) {
 
   Entity truck = registry->CreateEntity();
   truck.AddComponent<TransformComponent>(glm::vec2(500.0, 500.0),
-                                         glm::vec2(2.0, 2.0), -135.0);
+                                         glm::vec2(2.0, 2.0), 0.0);
   truck.AddComponent<RigidBodyComponent>(glm::vec2(-30.0, -30.0));
   truck.AddComponent<SpriteComponent>("truck-image", 1, 32, 32);
-  truck.AddComponent<BoxColliderComponent>(32, 32);
+  truck.AddComponent<BoxColliderComponent>(32 * 2.0, 32 * 2.0);
 
   Entity radar = registry->CreateEntity();
   radar.AddComponent<TransformComponent>(glm::vec2(windowWidth - 70, 10.0),
@@ -143,6 +146,8 @@ void Game::ProcessInput() {
       case SDL_KEYDOWN:
         if (sdlEvent.key.keysym.sym == SDLK_ESCAPE) {
           isRunning = false;
+        } else if (sdlEvent.key.keysym.sym == SDLK_d) {
+          isDebug = !isDebug;
         }
         break;
 
@@ -178,6 +183,9 @@ void Game::Render() {
   SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
   SDL_RenderClear(renderer);
   registry->GetSystem<RenderSystem>().Update(renderer, assetStore);
+  if (isDebug) {
+    registry->GetSystem<RenderColliderSystem>().Update(renderer);
+  }
   SDL_RenderPresent(renderer);  // swap the back & front buffer
 }
 

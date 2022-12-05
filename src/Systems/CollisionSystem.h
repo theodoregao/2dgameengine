@@ -7,6 +7,7 @@
 #include "../Components/TransformComponent.h"
 #include "../ECS/ECS.h"
 #include "../Logger/Logger.h"
+#include "Utils.h"
 
 class CollisionSystem : public System {
  public:
@@ -26,11 +27,11 @@ class CollisionSystem : public System {
         if (a == b) continue;
         auto bTransform = b.GetComponent<TransformComponent>();
         auto bCollider = b.GetComponent<BoxColliderComponent>();
-        auto isCollides =
-            CheckAABBCollision(aTransform.position + aCollider.offset,
-                               glm::vec2(aCollider.width, aCollider.height),
-                               bTransform.position + bCollider.offset,
-                               glm::vec2(bCollider.width, bCollider.height));
+        auto isCollides = CollisionUtil::CheckAABBCollision(
+            aTransform.position + aCollider.offset,
+            glm::vec2(aCollider.width, aCollider.height),
+            bTransform.position + bCollider.offset,
+            glm::vec2(bCollider.width, bCollider.height));
         if (isCollides) {
           Logger::Log(typeid(this).name(), std::to_string(a.GetId()) +
                                                " collides with " +
@@ -38,14 +39,5 @@ class CollisionSystem : public System {
         }
       }
     }
-  }
-
- private:
-  bool CheckAABBCollision(glm::vec2 aPosition, glm::vec2 aSize,
-                          glm::vec2 bPosition, glm::vec2 bSize) {
-    return (aPosition.x < bPosition.x + bSize.x &&
-            aPosition.x + aSize.x > bPosition.x &&
-            aPosition.y < bPosition.y + bSize.y &&
-            aPosition.y + aSize.y > bPosition.y);
   }
 };
