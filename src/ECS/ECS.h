@@ -1,6 +1,7 @@
 #pragma once
 
 #include <bitset>
+#include <deque>
 #include <memory>
 #include <set>
 #include <typeindex>
@@ -27,6 +28,7 @@ class Entity {
   bool HasComponent() const;
   template <typename TComponent>
   TComponent& GetComponent() const;
+  void Kill();
 
   Entity& operator=(const Entity& other) = default;
   bool operator==(const Entity& other) const { return id == other.id; }
@@ -106,6 +108,7 @@ class Registry {
 
   // Entity management
   Entity CreateEntity();
+  void KillEntity(Entity entity);
 
   // Component management
   template <typename TComponent, typename... TArgs>
@@ -129,9 +132,11 @@ class Registry {
 
  private:
   void AddEntityToSystems(Entity entity);
+  void RemoveEntityFromSystems(Entity entity);
 
  private:
   size_t numEntities = 0;
+  std::deque<size_t> freeIds;
   std::vector<std::shared_ptr<IPool>> componentPools;
   std::vector<Signature> entityComponentSignatures;
   std::unordered_map<std::type_index, std::shared_ptr<System>> systems;

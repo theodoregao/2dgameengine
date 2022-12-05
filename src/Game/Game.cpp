@@ -120,6 +120,7 @@ void Game::LoadLevel(int level) {
   tank.AddComponent<RigidBodyComponent>(glm::vec2(50.0, 50.0));
   tank.AddComponent<SpriteComponent>("tank-image", 2, 32, 32);
   tank.AddComponent<BoxColliderComponent>(32, 32);
+  tank.Kill();
 
   Entity truck = registry->CreateEntity();
   truck.AddComponent<TransformComponent>(glm::vec2(500.0, 500.0),
