@@ -4,7 +4,6 @@
 
 #include <fstream>
 #include <glm/glm.hpp>
-#include <typeinfo>
 
 #include "../Components/AnimationComponent.h"
 #include "../Components/BoxColliderComponent.h"
@@ -31,7 +30,7 @@ int Game::mapWidth;
 int Game::mapHeight;
 
 Game::Game() {
-  Logger::Log(typeid(this).name(), "Game contructor called");
+  Logger::Log(LOG_CLASS_TAG, "Game contructor called");
   registry = std::make_unique<Registry>();
   assetStore = std::make_unique<AssetStore>();
   eventBus = std::make_unique<EventBus>();
@@ -39,26 +38,26 @@ Game::Game() {
   isDebug = false;
 }
 
-Game::~Game() { Logger::Log(typeid(this).name(), "Game destructor called"); }
+Game::~Game() { Logger::Log(LOG_CLASS_TAG, "Game destructor called"); }
 
 void Game::Initialize() {
-  Logger::Log(typeid(this).name(), "Initialize()");
+  Logger::Log(LOG_CLASS_TAG, "Initialize()");
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-    Logger::Err(typeid(this).name(), "Error initializing SDL.");
+    Logger::Err(LOG_CLASS_TAG, "Error initializing SDL.");
     return;
   }
   window =
       SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                        windowWidth, windowHeight, SDL_WINDOW_BORDERLESS);
   if (!window) {
-    Logger::Err(typeid(this).name(), "Error creating SDL window.");
-    Logger::Err(typeid(this).name(), SDL_GetError());
+    Logger::Err(LOG_CLASS_TAG, "Error creating SDL window.");
+    Logger::Err(LOG_CLASS_TAG, SDL_GetError());
     return;
   }
   renderer = SDL_CreateRenderer(window, -1, 0);
   if (!renderer) {
-    Logger::Err(typeid(this).name(), "Error creating SDL renderer.");
-    Logger::Err(typeid(this).name(), SDL_GetError());
+    Logger::Err(LOG_CLASS_TAG, "Error creating SDL renderer.");
+    Logger::Err(LOG_CLASS_TAG, SDL_GetError());
     return;
   }
   // SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
@@ -69,7 +68,7 @@ void Game::Initialize() {
 }
 
 void Game::Run() {
-  Logger::Log(typeid(this).name(), "Run()");
+  Logger::Log(LOG_CLASS_TAG, "Run()");
   Setup();
   while (isRunning) {
     ProcessInput();
@@ -81,7 +80,7 @@ void Game::Run() {
 void Game::Setup() { LoadLevel(1); }
 
 void Game::LoadLevel(int level) {
-  Logger::Log(typeid(this).name(), "Setup()");
+  Logger::Log(LOG_CLASS_TAG, "Setup()");
   registry->AddSystem<AnimationSystem>();
   registry->AddSystem<CameraMovementSystem>();
   registry->AddSystem<CollisionSystem>();
@@ -221,7 +220,7 @@ void Game::Render() {
 }
 
 void Game::Destory() {
-  Logger::Log(typeid(this).name(), "Destory()");
+  Logger::Log(LOG_CLASS_TAG, "Destory()");
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();

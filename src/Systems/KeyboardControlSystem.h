@@ -8,7 +8,6 @@
 #include "../ECS/ECS.h"
 #include "../EventBus/EventBus.h"
 #include "../Events/KeyPressedEvent.h"
-#include "../Logger/Logger.h"
 
 class KeyboardControlSystem : public System {
  public:

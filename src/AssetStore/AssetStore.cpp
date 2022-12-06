@@ -3,17 +3,15 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-#include <typeinfo>
-
 #include "../Logger/Logger.h"
 
 AssetStore::AssetStore() {
-  Logger::Log(typeid(this).name(), "AssetStore constructor called!");
+  Logger::Log(LOG_CLASS_TAG, "AssetStore constructor called!");
 }
 
 AssetStore::~AssetStore() {
   ClearAssets();
-  Logger::Log(typeid(this).name(), "AssetStore destructor called!");
+  Logger::Log(LOG_CLASS_TAG, "AssetStore destructor called!");
 }
 
 void AssetStore::ClearAssets() {

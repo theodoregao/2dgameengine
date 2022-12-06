@@ -4,7 +4,6 @@
 #include <list>
 #include <map>
 #include <typeindex>
-#include <typeinfo>
 
 #include "../Logger/Logger.h"
 #include "Event.h"
@@ -42,8 +41,8 @@ typedef std::list<std::unique_ptr<IEventCallback>> HandlerList;
 
 class EventBus {
  public:
-  EventBus() { Logger::Log(typeid(this).name(), "contructor called"); };
-  ~EventBus() { Logger::Log(typeid(this).name(), "destructor called"); };
+  EventBus() { Logger::Log(LOG_CLASS_TAG, "contructor called"); };
+  ~EventBus() { Logger::Log(LOG_CLASS_TAG, "destructor called"); };
 
   void Reset() { subscribers.clear(); }
 

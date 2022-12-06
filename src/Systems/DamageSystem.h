@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <typeinfo>
 
 #include "../Components/BoxColliderComponent.h"
 #include "../ECS/ECS.h"
@@ -19,9 +18,9 @@ class DamageSystem : public System {
   }
 
   void OnCollision(CollisionEvent& event) {
-    Logger::Log(typeid(this).name(), std::to_string(event.a.GetId()) +
-                                         " collides with " +
-                                         std::to_string(event.b.GetId()));
+    Logger::Log(LOG_CLASS_TAG, std::to_string(event.a.GetId()) +
+                                   " collides with " +
+                                   std::to_string(event.b.GetId()));
     event.a.Kill();
     event.b.Kill();
   }

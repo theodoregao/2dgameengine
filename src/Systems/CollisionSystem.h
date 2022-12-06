@@ -2,14 +2,12 @@
 
 #include <glm/glm.hpp>
 #include <memory>
-#include <typeinfo>
 
 #include "../Components/BoxColliderComponent.h"
 #include "../Components/TransformComponent.h"
 #include "../ECS/ECS.h"
 #include "../EventBus/EventBus.h"
 #include "../Events/CollisionEvent.h"
-#include "../Logger/Logger.h"
 #include "Utils.h"
 
 class CollisionSystem : public System {

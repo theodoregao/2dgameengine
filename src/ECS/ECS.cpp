@@ -40,14 +40,14 @@ Entity Registry::CreateEntity() {
   Entity entity(entityId);
   entity.registry = this;
   entitiesToBeAdded.insert(entity);
-  Logger::Log(typeid(this).name(),
+  Logger::Log(LOG_CLASS_TAG,
               "Entity creawted with id = " + std::to_string(entityId));
   return entity;
 }
 
 void Registry::KillEntity(Entity entity) {
   entitiesToBeKilled.insert(entity);
-  Logger::Log(typeid(this).name(),
+  Logger::Log(LOG_CLASS_TAG,
               "Entity killed with id = " + std::to_string(entity.GetId()));
 }
 

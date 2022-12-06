@@ -9,7 +9,6 @@
 #include "../Components/BoxColliderComponent.h"
 #include "../Components/TransformComponent.h"
 #include "../ECS/ECS.h"
-#include "../Logger/Logger.h"
 
 class RenderColliderSystem : public System {
  public:

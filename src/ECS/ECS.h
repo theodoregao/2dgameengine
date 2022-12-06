@@ -5,7 +5,6 @@
 #include <memory>
 #include <set>
 #include <typeindex>
-#include <typeinfo>
 #include <unordered_map>
 #include <vector>
 
@@ -97,12 +96,8 @@ class Pool : public IPool {
 
 class Registry {
  public:
-  Registry() {
-    Logger::Log(typeid(this).name(), "Registry contructor called");
-  };
-  ~Registry() {
-    Logger::Log(typeid(this).name(), "Registry destructor called");
-  };
+  Registry() { Logger::Log(LOG_CLASS_TAG, "Registry contructor called"); };
+  ~Registry() { Logger::Log(LOG_CLASS_TAG, "Registry destructor called"); };
 
   void Update();
 
@@ -197,9 +192,9 @@ void Registry::AddComponent(Entity entity, TArgs&&... args) {
 
   entityComponentSignatures[entityId].set(componentId);
 
-  Logger::Log(typeid(this).name(),
-              "Component id " + std::to_string(componentId) +
-                  " was added to entity id " + std::to_string(entityId));
+  Logger::Log(LOG_CLASS_TAG, "Component id " + std::to_string(componentId) +
+                           " was added to entity id " +
+                           std::to_string(entityId));
 }
 
 template <typename TComponent>
@@ -208,9 +203,9 @@ void Registry::RemoveComponent(Entity entity) {
   const auto entityId = entity.GetId();
   entityComponentSignatures[entityId].set(componentId, false);
 
-  Logger::Log(typeid(this).name(),
-              "Component id " + std::to_string(componentId) +
-                  " was removed from entity id " + std::to_string(entityId));
+  Logger::Log(LOG_CLASS_TAG, "Component id " + std::to_string(componentId) +
+                           " was removed from entity id " +
+                           std::to_string(entityId));
 }
 
 template <typename TComponent>
