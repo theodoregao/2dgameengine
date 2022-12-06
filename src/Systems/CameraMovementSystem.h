@@ -25,7 +25,6 @@ class CameraMovementSystem : public System {
       }
       camera.x = camera.x < 0 ? 0 : camera.x;
       camera.y = camera.y < 0 ? 0 : camera.y;
-      ;
     }
   }
 };
