@@ -8,12 +8,16 @@
 #include "../ECS/ECS.h"
 #include "../EventBus/EventBus.h"
 
-const int GAME_WINDOW_WIDTH = 800;
-const int GAME_WINDOW_HEIGHT = 600;
 const int FPS = 60;
 const int MILLISECS_PER_FRAME = 1000 / FPS;
 
 class Game {
+ public:
+  static int windowWidth;
+  static int windowHeight;
+  static int mapWidth;
+  static int mapHeight;
+
  public:
   Game();
   ~Game();
@@ -36,7 +40,6 @@ class Game {
 
   bool isRunning;
   bool isDebug;
-  int windowWidth;
-  int windowHeight;
+  SDL_Rect camera;
   int millisecsPreviousFrame;
 };

@@ -8,6 +8,7 @@
 
 #include "../Components/AnimationComponent.h"
 #include "../Components/BoxColliderComponent.h"
+#include "../Components/CameraFollowComponent.h"
 #include "../Components/KeyboardControlledComponent.h"
 #include "../Components/RigidBodyComponent.h"
 #include "../Components/SpriteComponent.h"
@@ -16,12 +17,18 @@
 #include "../Events/KeyPressedEvent.h"
 #include "../Logger/Logger.h"
 #include "../Systems/AnimationSystem.h"
+#include "../Systems/CameraMovementSystem.h"
 #include "../Systems/CollisionSystem.h"
 #include "../Systems/DamageSystem.h"
 #include "../Systems/KeyboardControlSystem.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/RenderColliderSystem.h"
 #include "../Systems/RenderSystem.h"
+
+int Game::windowWidth = 800;
+int Game::windowHeight = 600;
+int Game::mapWidth;
+int Game::mapHeight;
 
 Game::Game() {
   Logger::Log(typeid(this).name(), "Game contructor called");
@@ -40,8 +47,6 @@ void Game::Initialize() {
     Logger::Err(typeid(this).name(), "Error initializing SDL.");
     return;
   }
-  windowWidth = GAME_WINDOW_WIDTH;
-  windowHeight = GAME_WINDOW_HEIGHT;
   window =
       SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                        windowWidth, windowHeight, SDL_WINDOW_BORDERLESS);
@@ -57,6 +62,10 @@ void Game::Initialize() {
     return;
   }
   // SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+  camera.x = 0;
+  camera.y = 0;
+  camera.w = windowWidth;
+  camera.h = windowHeight;
 }
 
 void Game::Run() {
@@ -74,6 +83,7 @@ void Game::Setup() { LoadLevel(1); }
 void Game::LoadLevel(int level) {
   Logger::Log(typeid(this).name(), "Setup()");
   registry->AddSystem<AnimationSystem>();
+  registry->AddSystem<CameraMovementSystem>();
   registry->AddSystem<CollisionSystem>();
   registry->AddSystem<DamageSystem>();
   registry->AddSystem<KeyboardControlSystem>();
@@ -91,7 +101,7 @@ void Game::LoadLevel(int level) {
   assetStore->AddTexture(renderer, "tilemap-image",
                          "./assets/tilemaps/jungle.png");
   int tileSize = 32;
-  double tileScale = 1.0;
+  double tileScale = 2.0;
   int mapNumCols = 25;
   int mapNumRows = 20;
   std::fstream mapFile;
@@ -113,6 +123,8 @@ void Game::LoadLevel(int level) {
                                          srcRectX, srcRectY);
     }
   }
+  mapWidth = mapNumCols * tileSize * tileScale;
+  mapHeight = mapNumRows * tileSize * tileScale;
 
   Entity chopper = registry->CreateEntity();
   chopper.AddComponent<TransformComponent>(glm::vec2(200, 200),
@@ -120,10 +132,11 @@ void Game::LoadLevel(int level) {
   chopper.AddComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   chopper.AddComponent<SpriteComponent>("chopper-image", 2, 32, 32);
   chopper.AddComponent<AnimationComponent>(2, 15);
-  int speed = 50;
+  int speed = 80;
   chopper.AddComponent<KeyboardControlledComponent>(
       glm::vec2(0, -speed), glm::vec2(speed, 0), glm::vec2(0, speed),
       glm::vec2(-speed, 0));
+  chopper.AddComponent<CameraFollowComponent>();
 
   Entity tank = registry->CreateEntity();
   tank.AddComponent<TransformComponent>(glm::vec2(10.0, 10.0),
@@ -191,6 +204,7 @@ void Game::Update() {
   registry->Update();
 
   // Ask all the systems to update
+  registry->GetSystem<CameraMovementSystem>().Update(camera);
   registry->GetSystem<MovementSystem>().Update(deltaTime);
   registry->GetSystem<AnimationSystem>().Update();
   registry->GetSystem<CollisionSystem>().Update(eventBus);
@@ -199,7 +213,7 @@ void Game::Update() {
 void Game::Render() {
   SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
   SDL_RenderClear(renderer);
-  registry->GetSystem<RenderSystem>().Update(renderer, assetStore);
+  registry->GetSystem<RenderSystem>().Update(renderer, assetStore, camera);
   if (isDebug) {
     registry->GetSystem<RenderColliderSystem>().Update(renderer);
   }
