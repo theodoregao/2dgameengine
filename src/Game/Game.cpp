@@ -24,6 +24,7 @@
 #include "../Systems/KeyboardControlSystem.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/ProjectileEmitSystem.h"
+#include "../Systems/ProjectileLifecycleSystem.h"
 #include "../Systems/RenderColliderSystem.h"
 #include "../Systems/RenderSystem.h"
 
@@ -91,6 +92,7 @@ void Game::LoadLevel(int level) {
   registry->AddSystem<KeyboardControlSystem>();
   registry->AddSystem<MovementSystem>();
   registry->AddSystem<ProjectileEmitSystem>();
+  registry->AddSystem<ProjectileLifecycleSystem>();
   registry->AddSystem<RenderColliderSystem>();
   registry->AddSystem<RenderSystem>();
 
@@ -150,8 +152,8 @@ void Game::LoadLevel(int level) {
   tank.AddComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   tank.AddComponent<SpriteComponent>("tank-image", 1, 32, 32);
   tank.AddComponent<BoxColliderComponent>(32, 32);
-  tank.AddComponent<ProjectileEmitterComponent>(glm::vec2(0.0, -100.0), 2000,
-                                                10000, 0);
+  tank.AddComponent<ProjectileEmitterComponent>(glm::vec2(50.0, 50.0), 2000,
+                                                5000, 0);
   tank.AddComponent<HealthComponent>(100);
 
   Entity truck = registry->CreateEntity();
@@ -160,8 +162,8 @@ void Game::LoadLevel(int level) {
   truck.AddComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   truck.AddComponent<SpriteComponent>("truck-image", 1, 32, 32);
   truck.AddComponent<BoxColliderComponent>(32, 32);
-  truck.AddComponent<ProjectileEmitterComponent>(glm::vec2(0.0, -100.0), 5000,
-                                                 10000, 0);
+  truck.AddComponent<ProjectileEmitterComponent>(glm::vec2(-50.0, 50.0), 3000,
+                                                 5000, 0);
   truck.AddComponent<HealthComponent>(100);
 
   Entity radar = registry->CreateEntity();
@@ -221,6 +223,7 @@ void Game::Update() {
   registry->GetSystem<CollisionSystem>().Update(eventBus);
   registry->GetSystem<MovementSystem>().Update(deltaTime);
   registry->GetSystem<ProjectileEmitSystem>().Update(registry);
+  registry->GetSystem<ProjectileLifecycleSystem>().Update();
 }
 
 void Game::Render() {

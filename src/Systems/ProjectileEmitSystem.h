@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Components/BoxColliderComponent.h"
+#include "../Components/ProjectileComponent.h"
 #include "../Components/ProjectileEmitterComponent.h"
 #include "../Components/RigidBodyComponent.h"
 #include "../Components/SpriteComponent.h"
@@ -35,6 +36,9 @@ class ProjectileEmitSystem : public System {
             projectileEmitter.projectileVelocity);
         projectile.AddComponent<SpriteComponent>("bullet-image", 4, 4, 4);
         projectile.AddComponent<BoxColliderComponent>(4, 4);
+        projectile.AddComponent<ProjectileComponent>(
+            projectileEmitter.hitPercentDamage,
+            projectileEmitter.projectileDuration);
         projectileEmitter.lastEmissionTime = SDL_GetTicks();
       }
     }
