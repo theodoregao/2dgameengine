@@ -39,8 +39,10 @@ class RenderSystem : public System {
       const auto transform = entity.transformComponent;
       const auto sprite = entity.spriteComponent;
       SDL_Rect srcRect = sprite.srcRect;
-      SDL_Rect dstRect = {static_cast<int>(transform.position.x - camera.x),
-                          static_cast<int>(transform.position.y - camera.y),
+      SDL_Rect dstRect = {static_cast<int>(transform.position.x -
+                                           (sprite.isFixed ? 0 : camera.x)),
+                          static_cast<int>(transform.position.y -
+                                           (sprite.isFixed ? 0 : camera.y)),
                           static_cast<int>(sprite.width * transform.scale.x),
                           static_cast<int>(sprite.height * transform.scale.y)};
       SDL_RenderCopyEx(renderer, assetStore->GetTexture(sprite.assetId),

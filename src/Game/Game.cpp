@@ -119,7 +119,7 @@ void Game::LoadLevel(int level) {
           glm::vec2(x * (tileScale * tileSize), y * (tileScale * tileSize)),
           glm::vec2(tileScale, tileScale), 0.0);
       tile.AddComponent<SpriteComponent>("tilemap-image", 0, tileSize, tileSize,
-                                         srcRectX, srcRectY);
+                                         false, srcRectX, srcRectY);
     }
   }
   mapWidth = mapNumCols * tileSize * tileScale;
@@ -154,7 +154,7 @@ void Game::LoadLevel(int level) {
   Entity radar = registry->CreateEntity();
   radar.AddComponent<TransformComponent>(glm::vec2(windowWidth - 70, 10.0),
                                          glm::vec2(1.0, 1.0), 0.0);
-  radar.AddComponent<SpriteComponent>("radar-image", 1, 64, 64);
+  radar.AddComponent<SpriteComponent>("radar-image", 1, 64, 64, true);
   radar.AddComponent<AnimationComponent>(8, 5);
 }
 
