@@ -126,8 +126,8 @@ void Game::LoadLevel(int level) {
   mapHeight = mapNumRows * tileSize * tileScale;
 
   Entity chopper = registry->CreateEntity();
-  chopper.AddComponent<TransformComponent>(glm::vec2(200, 200),
-                                           glm::vec2(1.0, 1.0), 0.0);
+  chopper.AddComponent<TransformComponent>(
+      glm::vec2(windowWidth / 2, windowHeight / 2), glm::vec2(1.0, 1.0), 0.0);
   chopper.AddComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   chopper.AddComponent<SpriteComponent>("chopper-image", 2, 32, 32);
   chopper.AddComponent<AnimationComponent>(2, 15);
@@ -214,7 +214,7 @@ void Game::Render() {
   SDL_RenderClear(renderer);
   registry->GetSystem<RenderSystem>().Update(renderer, assetStore, camera);
   if (isDebug) {
-    registry->GetSystem<RenderColliderSystem>().Update(renderer);
+    registry->GetSystem<RenderColliderSystem>().Update(renderer, camera);
   }
   SDL_RenderPresent(renderer);  // swap the back & front buffer
 }

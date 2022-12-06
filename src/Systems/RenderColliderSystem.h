@@ -17,7 +17,7 @@ class RenderColliderSystem : public System {
     RequireComponent<TransformComponent>();
   }
 
-  void Update(SDL_Renderer* renderer) {
+  void Update(SDL_Renderer* renderer, SDL_Rect camera) {
     auto entities = GetSystemEntities();
     std::set<Entity> collidedEntities;
     for (auto i = entities.begin(); i != entities.end(); i++) {
@@ -41,10 +41,12 @@ class RenderColliderSystem : public System {
       }
 
       SDL_Rect colliderRect = {
-          static_cast<int>(aTransform.position.x + aCollider.offset.x),
-          static_cast<int>(aTransform.position.y + aCollider.offset.y),
-          static_cast<int>(aCollider.width),
-          static_cast<int>(aCollider.height)};
+          static_cast<int>(aTransform.position.x + aCollider.offset.x -
+                           camera.x),
+          static_cast<int>(aTransform.position.y + aCollider.offset.y -
+                           camera.y),
+          static_cast<int>(aCollider.width * aTransform.scale.x),
+          static_cast<int>(aCollider.height * aTransform.scale.y)};
       glm::vec4 color(0, 0, 0, 255);
       if (collidedEntities.find(a) != collidedEntities.end()) color.r = 255;
       SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.w);
