@@ -55,7 +55,7 @@ Entity Registry::CreateEntity() {
   entity.registry = this;
   entitiesToBeAdded.insert(entity);
   Logger::Log(LOG_CLASS_TAG,
-              "Entity creawted with id = " + std::to_string(entityId));
+              "Entity created with id = " + std::to_string(entityId));
   return entity;
 }
 
@@ -74,7 +74,17 @@ void Registry::Update() {
   for (auto entity : entitiesToBeKilled) {
     RemoveEntityFromSystem(entity);
     entityComponentSignatures[entity.GetId()].reset();
+
+    for (auto pool : componentPools) {
+      if (pool) {
+        pool->RemoveEntityFromPool(entity.GetId());
+      }
+    }
+
     freeIds.push_back(entity.GetId());
+
+    RemoveEntityTag(entity);
+    RemoveEntityGroup(entity);
   }
   entitiesToBeKilled.clear();
 }
