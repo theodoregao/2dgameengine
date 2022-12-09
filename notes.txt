@@ -11,3 +11,7 @@ CppCon 2014: Mike Acton "Data-Oriented Design and C++": https://www.youtube.com/
 # Valgrind
 Valgrind is an instrumentation framework for building dynamic analysis tools.: https://valgrind.org/
 run command: valgrind --tool=cachegrind ./out/gameengine
+
+# Popular ECS open source projects
+EnTT (for C++ projects): https://github.com/skypjack/entt
+Flecs (for C projects): https://github.com/SanderMertens/flecs
