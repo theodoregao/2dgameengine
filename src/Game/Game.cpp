@@ -13,6 +13,7 @@
 #include "../Components/ProjectileEmitterComponent.h"
 #include "../Components/RigidBodyComponent.h"
 #include "../Components/SpriteComponent.h"
+#include "../Components/TextLabelComponent.h"
 #include "../Components/TransformComponent.h"
 #include "../ECS/ECS.h"
 #include "../Events/KeyPressedEvent.h"
@@ -27,6 +28,7 @@
 #include "../Systems/ProjectileLifecycleSystem.h"
 #include "../Systems/RenderColliderSystem.h"
 #include "../Systems/RenderSystem.h"
+#include "../Systems/RenderTextSystem.h"
 
 int Game::windowWidth = 800;
 int Game::windowHeight = 600;
@@ -50,6 +52,12 @@ void Game::Initialize() {
     Logger::Err(LOG_CLASS_TAG, "Error initializing SDL.");
     return;
   }
+
+  if (TTF_Init() != 0) {
+    Logger::Err(LOG_CLASS_TAG, "Error initializing SDL TTF.");
+    return;
+  }
+
   window =
       SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                        windowWidth, windowHeight, SDL_WINDOW_BORDERLESS);
@@ -95,6 +103,7 @@ void Game::LoadLevel(int level) {
   registry->AddSystem<ProjectileLifecycleSystem>();
   registry->AddSystem<RenderColliderSystem>();
   registry->AddSystem<RenderSystem>();
+  registry->AddSystem<RenderTextSystem>();
 
   assetStore->AddTexture(renderer, "chopper-image",
                          "./assets/images/chopper-spritesheet.png");
@@ -107,6 +116,8 @@ void Game::LoadLevel(int level) {
                          "./assets/tilemaps/jungle.png");
   assetStore->AddTexture(renderer, "bullet-image",
                          "./assets/images/bullet.png");
+  assetStore->AddFont("charriot-font", "./assets/fonts/charriot.ttf", 14);
+
   int tileSize = 32;
   double tileScale = 2.0;
   int mapNumCols = 25;
@@ -178,6 +189,11 @@ void Game::LoadLevel(int level) {
                                          glm::vec2(1.0, 1.0), 0.0);
   radar.AddComponent<SpriteComponent>("radar-image", 1, 64, 64, true);
   radar.AddComponent<AnimationComponent>(8, 5);
+
+  Entity label = registry->CreateEntity();
+  SDL_Color white = {255, 255, 255};
+  label.AddComponent<TextLabelComponent>(glm::vec2(windowWidth / 2 - 40, 10),
+                                         "CHOPPER 1.0", "charriot-font", white);
 }
 
 void Game::ProcessInput() {
@@ -238,6 +254,7 @@ void Game::Render() {
   SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
   SDL_RenderClear(renderer);
   registry->GetSystem<RenderSystem>().Update(renderer, assetStore, camera);
+  registry->GetSystem<RenderTextSystem>().Update(renderer, assetStore, camera);
   if (isDebug) {
     registry->GetSystem<RenderColliderSystem>().Update(renderer, camera);
   }
