@@ -27,6 +27,7 @@
 #include "../Systems/ProjectileEmitSystem.h"
 #include "../Systems/ProjectileLifecycleSystem.h"
 #include "../Systems/RenderColliderSystem.h"
+#include "../Systems/RenderHealthBarSystem.h"
 #include "../Systems/RenderSystem.h"
 #include "../Systems/RenderTextSystem.h"
 
@@ -103,6 +104,7 @@ void Game::LoadLevel(int level) {
   registry->AddSystem<ProjectileLifecycleSystem>();
   registry->AddSystem<RenderColliderSystem>();
   registry->AddSystem<RenderSystem>();
+  registry->AddSystem<RenderHealthBarSystem>();
   registry->AddSystem<RenderTextSystem>();
 
   assetStore->AddTexture(renderer, "chopper-image",
@@ -116,7 +118,9 @@ void Game::LoadLevel(int level) {
                          "./assets/tilemaps/jungle.png");
   assetStore->AddTexture(renderer, "bullet-image",
                          "./assets/images/bullet.png");
-  assetStore->AddFont("charriot-font", "./assets/fonts/charriot.ttf", 14);
+  assetStore->AddFont("charriot-font-20", "./assets/fonts/charriot.ttf", 20);
+  assetStore->AddFont("pico8-font-5", "./assets/fonts/pico8.ttf", 5);
+  assetStore->AddFont("pico8-font-10", "./assets/fonts/pico8.ttf", 10);
 
   int tileSize = 32;
   double tileScale = 2.0;
@@ -254,6 +258,8 @@ void Game::Render() {
   SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
   SDL_RenderClear(renderer);
   registry->GetSystem<RenderSystem>().Update(renderer, assetStore, camera);
+  registry->GetSystem<RenderHealthBarSystem>().Update(renderer, assetStore,
+                                                      camera);
   registry->GetSystem<RenderTextSystem>().Update(renderer, assetStore, camera);
   if (isDebug) {
     registry->GetSystem<RenderColliderSystem>().Update(renderer, camera);
