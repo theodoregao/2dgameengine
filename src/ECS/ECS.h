@@ -29,6 +29,12 @@ class Entity {
   TComponent& GetComponent() const;
   void Kill();
 
+  // Tag & Group management
+  void Tag(const std::string tag);
+  bool HasTag(const std::string tag) const;
+  void Group(const std::string group);
+  bool BelongsToGroup(const std::string group) const;
+
   Entity& operator=(const Entity& other) = default;
   bool operator==(const Entity& other) const { return id == other.id; }
   bool operator!=(const Entity& other) const { return id != other.id; }
@@ -125,6 +131,18 @@ class Registry {
   template <typename TSystem>
   TSystem& GetSystem() const;
 
+  // Tag management
+  void TagEntity(Entity entity, const std::string& tag);
+  bool EntityHasTag(Entity entity, const std::string& tag) const;
+  Entity GetEntityByTag(const std::string& tag) const;
+  void RemoveEntityTag(Entity entity);
+
+  // Group management
+  void GroupEntity(Entity entity, const std::string& group);
+  bool EntityBelongsToGroup(Entity entity, const std::string& group) const;
+  std::vector<Entity> GetEntitiesByGroup(const std::string& group) const;
+  void RemoveEntityGroup(Entity entity);
+
  private:
   void AddEntityToSystem(Entity entity);
   void RemoveEntityFromSystem(Entity entity);
@@ -135,8 +153,15 @@ class Registry {
   std::vector<std::shared_ptr<IPool>> componentPools;
   std::vector<Signature> entityComponentSignatures;
   std::unordered_map<std::type_index, std::shared_ptr<System>> systems;
+
   std::set<Entity> entitiesToBeAdded;
   std::set<Entity> entitiesToBeKilled;
+
+  std::unordered_map<std::string, Entity> entityPerTag;
+  std::unordered_map<int, std::string> tagPerEntity;
+
+  std::unordered_map<std::string, std::set<Entity>> entitiesPerGroup;
+  std::unordered_map<int, std::string> groupPerEntity;
 };
 
 template <typename TComponent, typename... TArgs>
@@ -193,8 +218,8 @@ void Registry::AddComponent(Entity entity, TArgs&&... args) {
   entityComponentSignatures[entityId].set(componentId);
 
   Logger::Log(LOG_CLASS_TAG, "Component id " + std::to_string(componentId) +
-                           " was added to entity id " +
-                           std::to_string(entityId));
+                                 " was added to entity id " +
+                                 std::to_string(entityId));
 }
 
 template <typename TComponent>
@@ -204,8 +229,8 @@ void Registry::RemoveComponent(Entity entity) {
   entityComponentSignatures[entityId].set(componentId, false);
 
   Logger::Log(LOG_CLASS_TAG, "Component id " + std::to_string(componentId) +
-                           " was removed from entity id " +
-                           std::to_string(entityId));
+                                 " was removed from entity id " +
+                                 std::to_string(entityId));
 }
 
 template <typename TComponent>

@@ -123,6 +123,7 @@ void Game::LoadLevel(int level) {
       mapFile.ignore();
 
       Entity tile = registry->CreateEntity();
+      tile.Group("tiles");
       tile.AddComponent<TransformComponent>(
           glm::vec2(x * (tileScale * tileSize), y * (tileScale * tileSize)),
           glm::vec2(tileScale, tileScale), 0.0);
@@ -134,11 +135,13 @@ void Game::LoadLevel(int level) {
   mapHeight = mapNumRows * tileSize * tileScale;
 
   Entity chopper = registry->CreateEntity();
+  chopper.Tag("player");
   chopper.AddComponent<TransformComponent>(
       glm::vec2(windowWidth / 2, windowHeight / 2), glm::vec2(1.0, 1.0), 0.0);
   chopper.AddComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   chopper.AddComponent<SpriteComponent>("chopper-image", 2, 32, 32);
   chopper.AddComponent<AnimationComponent>(2, 15);
+  chopper.AddComponent<BoxColliderComponent>(32, 32);
   int speed = 80;
   chopper.AddComponent<KeyboardControlledComponent>(
       glm::vec2(0, -speed), glm::vec2(speed, 0), glm::vec2(0, speed),
@@ -146,26 +149,28 @@ void Game::LoadLevel(int level) {
   chopper.AddComponent<CameraFollowComponent>();
   chopper.AddComponent<HealthComponent>(100);
   chopper.AddComponent<ProjectileEmitterComponent>(glm::vec2(150.0, 150.0), 500,
-                                                   10000, 0, true);
+                                                   10000, 30, true);
 
   Entity tank = registry->CreateEntity();
+  tank.Group("enemies");
   tank.AddComponent<TransformComponent>(glm::vec2(110.0, 500.0),
                                         glm::vec2(1.0, 1.0), 0.0);
   tank.AddComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   tank.AddComponent<SpriteComponent>("tank-image", 1, 32, 32);
   tank.AddComponent<BoxColliderComponent>(32, 32);
   tank.AddComponent<ProjectileEmitterComponent>(glm::vec2(50.0, 50.0), 2000,
-                                                5000, 0);
+                                                5000, 10);
   tank.AddComponent<HealthComponent>(100);
 
   Entity truck = registry->CreateEntity();
+  truck.Group("enemies");
   truck.AddComponent<TransformComponent>(glm::vec2(500.0, 450.0),
                                          glm::vec2(1.0, 1.0), 0.0);
   truck.AddComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0));
   truck.AddComponent<SpriteComponent>("truck-image", 1, 32, 32);
   truck.AddComponent<BoxColliderComponent>(32, 32);
   truck.AddComponent<ProjectileEmitterComponent>(glm::vec2(-50.0, 50.0), 3000,
-                                                 5000, 0);
+                                                 5000, 10);
   truck.AddComponent<HealthComponent>(100);
 
   Entity radar = registry->CreateEntity();
